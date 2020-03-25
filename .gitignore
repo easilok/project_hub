@@ -1,0 +1,3 @@
+*.o
+libs_files/
+workspace.vim

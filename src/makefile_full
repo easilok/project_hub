@@ -1,0 +1,26 @@
+# Based on http://www.cs.colby.edu/maxwell/courses/tutorials/maketutor
+IDIR = ../include
+CC=g++
+CFLAGS=-I$(IDIR)
+
+ODIR=../obj
+LDIR=../lib
+
+LIBS=-lm
+
+_DEPS = connection.h
+DEPS = $(patsubs %,$(IDIR)/%,$(_DEPS))
+
+_OBJ = projectHub.o connection.o
+OBJ = $(patsubs %,$(ODIR)/%,$(_OBJ))
+
+$(ODIR)/%.o: %.cpp $(DEPS)
+	$(CC) -c -o $@ $< $(CFLAGS)
+
+projectHub: $(OBJ)
+	$(CC) -o $@ $^ $(CFLAGS) $(LIBS)
+
+.PHONY: clean
+
+clean:
+	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~
