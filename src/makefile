@@ -8,7 +8,7 @@ ODIR=../obj
 _LDIR=../lib
 LDIR=$(patsubst %, -L%, $(_LDIR))
 
-LIBS=-lm -lcurlpp -lcurl
+LIBS=-lm -lcurlpp -lcurl -lncurses
 
 _DEPS = connection.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))

@@ -1,7 +1,9 @@
-#include <application.h>
+#include "application.h"
 #include <iostream>
 #include <string>
 #include <nlohmann/json.hpp>
+#include <curses.h>
+#include "BarMenu.h"
 
 using namespace std;
 using json = nlohmann::json;
@@ -86,6 +88,36 @@ string App::ProjectsMenu(void) {
 	}
 
 	return retVal;
+}
+
+void App::RunWithCurses(void) {
+
+	list<string> bottomKeys = {"1", "2", "3"};
+	list<string> bottomMenus = {"My Tasks", "Projects", "My Info"};
+	list<string> topKeys = {"A", "S"};
+	list<string> topMenus = {"Asana", "Trello"};
+
+	BarMenu menuBottom = BarMenu(&bottomKeys, &bottomMenus, BarMenu::Position::BOTTOM);
+	BarMenu menuTop = BarMenu(&topKeys, &topMenus, BarMenu::Position::TOP);
+
+	refresh();
+
+	bool exitProgram = false;
+
+	while(!exitProgram) {
+		menuTop.display();
+		menuBottom.display();
+		char choice = getch();
+
+		switch (choice) {
+			case 'q':
+				exitProgram = true;
+				break;
+			default:
+				// Pass choice to menus and they should interact
+				break;
+		}
+	}
 }
 
 void App::Run (void) {

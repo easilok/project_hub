@@ -9,6 +9,7 @@ class App {
 
 	public:
 		App();
+		void RunWithCurses(void);
 		void Run (void);
 		string ProjectsMenu(void);
 		string ProjectTasksMenu(int index);
