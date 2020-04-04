@@ -1,7 +1,7 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
-#include <asana.h>
+#include "../inc/asana.h"
 
 class App {
 	private:
@@ -9,7 +9,6 @@ class App {
 
 	public:
 		App();
-		void RunWithCurses(void);
 		void Run (void);
 		string ProjectsMenu(void);
 		string ProjectTasksMenu(int index);

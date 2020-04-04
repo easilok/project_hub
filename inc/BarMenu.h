@@ -15,9 +15,11 @@ class BarMenu {
 		std::list<std::string>* items;
 		std::list<std::string>* keys;
 		BarMenu(std::list<std::string> * k, std::list<std::string> * v, Position position);
-		void display();
+		void CreateWindow();
+		void Display();
 	private:
 		WINDOW * Menu;
+		int ItemSize;
 
 };
 

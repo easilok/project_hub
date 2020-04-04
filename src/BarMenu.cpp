@@ -11,10 +11,17 @@ BarMenu::BarMenu(list<string> * k, list<string> * v, Position position) {
 	items = v;
 	keys = k;
 	BarPosition = position;
+	
+	CreateWindow();
 
+}
+
+void BarMenu::CreateWindow() {
+	//
 	// replace with size
-	int xMax, yMax;
+	int yMax, xMax;
 	getmaxyx(stdscr, yMax, xMax);
+	ItemSize = xMax / items->size();
 
 	// calculate bar position
 	int yPos = 0;
@@ -27,7 +34,7 @@ BarMenu::BarMenu(list<string> * k, list<string> * v, Position position) {
 
 }
 
-void BarMenu::display() {
+void BarMenu::Display() {
 
 	list<string>::iterator itItems = items->begin();
 	list<string>::iterator itKeys = keys->begin();
@@ -39,10 +46,20 @@ void BarMenu::display() {
 		// Prepare menu identification
 		std::string tmp = *itKeys + ": " + *itItems;
 
-		wprintw(Menu, tmp.c_str());
-		wprintw(Menu, "   |   ");
+		int textXpos = 1;
 
-		/* mvwprintw(Menu, i + 1, 1, tmp.c_str()); */
+		if ((int)tmp.length() < ItemSize) {
+			textXpos = (ItemSize - (int)tmp.length()) / 2;
+		}
+
+		wmove(Menu, 1, textXpos + (i * ItemSize)); 
+		wprintw(Menu, tmp.c_str());
+
+		wmove(Menu, 1, (i + 1) * ItemSize);
+		// Don't print the separator in the last item
+		if (i < (int)items->size() - 1) {
+			wprintw(Menu, "|");
+		}
 
 		itItems++;
 		itKeys++;
