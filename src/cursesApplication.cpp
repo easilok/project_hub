@@ -21,24 +21,24 @@ CursesApp::CursesApp() {
 	BottomMenus = {"My Tasks", "Projects", "My Info", "Quit"};
 	TopKeys = {"A", "S"};
 	TopMenus = {"Asana", "Trello"};
-	BodyGreating = {
+	BodyGreeting = {
 		"Tasks Pending: " + to_string(asana.MyTasks.size()),
 		"Late Tasks: n/a",
 	};
 
 	Curses_init();
 
-	/* menuBottom = new BarMenu(&BottomKeys, &BottomMenus, BarMenu::Position::BOTTOM); */
-	/* menuTop = new BarMenu(&TopKeys, &TopMenus, BarMenu::Position::TOP); */
-	/* body = new Body(asana.UserInfo["name"].get<string>(), menuTop->MENU_HEIGHT, menuBottom->MENU_HEIGHT); */
+	menuBottom = new BarMenu(&BottomKeys, &BottomMenus, BarMenu::Position::BOTTOM);
+	menuTop = new BarMenu(&TopKeys, &TopMenus, BarMenu::Position::TOP);
+	body = new Body(asana.UserInfo["name"].get<string>(), BarMenu::MENU_HEIGHT, BarMenu::MENU_HEIGHT);
 
 }
 
 CursesApp::~CursesApp() {
-	/* delete body; */
-	/* delete menuBottom; */
-	/* delete menuTop; */
-	/* Curses_end(); */
+	delete body;
+	delete menuBottom;
+	delete menuTop;
+	Curses_end();
 }
 
 void CursesApp::Curses_init() {
@@ -47,6 +47,7 @@ void CursesApp::Curses_init() {
 	noecho();
 	cbreak();
 	curs_set(0);
+	keypad(stdscr, TRUE);
 
 	refresh();
 
@@ -133,21 +134,75 @@ void CursesApp::UserTasks() {
 
 	BodyList.clear();
 
-	for (int i = 1; i <= (int)asana.MyTasks.size(); i++) {
-		string tmp = to_string(i) + " :" + asana.MyTasks[i]["name"].get<string>();
+	for (int i = 0; i < (int)asana.MyTasks.size(); i++) {
+		string tmp = to_string(i + 1) + ": " + asana.MyTasks[i]["name"].get<string>();
 		BodyList.push_back(tmp);
 	}
 
 }
 
-void CursesApp::ProcessUserMenu(Body* body, char * choice) {
+void CursesApp::Projects() {
+	asana.GetProjects();
+
+	BodyList.clear();
+
+	for (int i = 0; i < (int)asana.Projects.size(); i++) {
+		string tmp = to_string(i + 1) + ": " + asana.Projects[i]["name"].get<string>();
+		BodyList.push_back(tmp);
+	}
+
+}
+
+void CursesApp::ProjectTasks(int index) {
+	if ((index < 0) || (index >= (int)asana.Projects.size())) {
+		return;
+	}
+
+	asana.GetProjectTasks(index);
+
+	BodyList.clear();
+
+	for (int i = 0; i < (int)asana.Tasks.size(); i++) {
+		string tmp = to_string(i + 1) + ": " + asana.Tasks[i]["name"].get<string>();
+		BodyList.push_back(tmp);
+	}
+
+}
+
+void CursesApp::ProcessUserMenu(int * choice) {
 
 	int visibleRows = 0;
 
 	switch (*choice) {
 		case '1':
 			UserTasks();
-			visibleRows = body->ShowList(&BodyList, -1, 0);
+			SelectedListItem = -1;
+			visibleRows = body->ShowList(&BodyList, &SelectedListItem, 0);
+			VisibleMenu = VISIBLE_MENU::MY_TASKS;
+			break;
+		case '2':
+			Projects();
+			SelectedListItem = -1;
+			visibleRows = body->ShowList(&BodyList, &SelectedListItem, 0);
+			VisibleMenu = VISIBLE_MENU::PROJECTS;
+			break;
+		case KEY_DOWN:
+			SelectedListItem++;
+			visibleRows = body->ShowList(&BodyList, &SelectedListItem, 0);
+			break;
+		case KEY_UP:
+			if(--SelectedListItem < 0) {
+				SelectedListItem = 0;
+			}
+			visibleRows = body->ShowList(&BodyList, &SelectedListItem, 0);
+			break;
+		case 10: // Enter
+			if (VisibleMenu == VISIBLE_MENU::PROJECTS) {
+				ProjectTasks(SelectedListItem);
+				SelectedListItem = -1;
+				visibleRows = body->ShowList(&BodyList, &SelectedListItem, 0);
+				VisibleMenu = VISIBLE_MENU::PROJECT_TASKS;
+			}
 			break;
 		default:
 			break;
@@ -156,18 +211,18 @@ void CursesApp::ProcessUserMenu(Body* body, char * choice) {
 
 void CursesApp::Run(void) {
 
-	BarMenu menuBottom = BarMenu(&BottomKeys, &BottomMenus, BarMenu::Position::BOTTOM);
-	BarMenu menuTop = BarMenu(&TopKeys, &TopMenus, BarMenu::Position::TOP);
-	Body body = Body(asana.UserInfo["name"].get<string>(), menuTop.MENU_HEIGHT, menuBottom.MENU_HEIGHT);
+	/* BarMenu menuBottom = BarMenu(&BottomKeys, &BottomMenus, BarMenu::Position::BOTTOM); */
+	/* BarMenu menuTop = BarMenu(&TopKeys, &TopMenus, BarMenu::Position::TOP); */
+	/* Body body = Body(asana.UserInfo["name"].get<string>(), BarMenu::MENU_HEIGHT, BarMenu::MENU_HEIGHT); */
 
-	body.Greating(&BodyGreating);
+	body->Greeting(&BodyGreeting);
 
 	bool exitProgram = false;
 
 	while(!exitProgram) {
-		menuTop.Display();
-		menuBottom.Display();
-		char choice = getch();
+		menuTop->Display();
+		menuBottom->Display();
+		int choice = getch();
 
 		switch (choice) {
 			case 'q':
@@ -175,11 +230,10 @@ void CursesApp::Run(void) {
 				break;
 			default:
 				// Pass choice to menus and they should interact
-				ProcessUserMenu(&body, &choice);
+				ProcessUserMenu(&choice);
 				break;
 		}
 	}
 
-	Curses_end();
 }
 

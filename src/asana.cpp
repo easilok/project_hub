@@ -219,7 +219,7 @@ void Asana::PrintProjectsInList() {
 json Asana::GetProjectTasks(int index) {
 	Tasks = json::parse("{}");
 
-	if (index < 0) {
+	if ((index < 0) || (index >= (int)Projects.size())){
 		return Tasks;
 	}
 

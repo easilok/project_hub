@@ -7,6 +7,8 @@ using namespace std;
 
 int main() {
 
+	setlocale(LC_ALL, "");
+
 	/* App app = App(); */
 	CursesApp app = CursesApp();
 
