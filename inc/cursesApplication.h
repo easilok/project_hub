@@ -1,6 +1,7 @@
 #ifndef CURSES_APPLICATION_H
 #define CURSES_APPLICATION_H
 
+#include "ProjectTool.h"
 #include "asana.h"
 #include "BarMenu.h"
 #include "Body.h"
@@ -22,7 +23,8 @@ class CursesApp {
 			PROJECT_TASKS,
 		};
 	private:
-		Asana asana;
+		list<ProjectTool>Tools;
+        Asana asana;
 
 		Body * body;
 		BarMenu * menuBottom;

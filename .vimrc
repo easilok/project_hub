@@ -6,6 +6,10 @@
 " set colorcolumn=90
 " highlight ColorColumn ctermbg=lightgray
 
+packadd termdebug
+let g:termdebug_popup = 1
+let g:termdebug_wide = 163
+
 let &path.="inc,lib,../inc,"
 
 set makeprg=make\ -C\ src

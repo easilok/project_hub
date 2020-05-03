@@ -3,31 +3,21 @@
 
 #include <string>
 #include <list>
+#include "ProjectTool.h"
 #include "nlohmann/json.hpp"
 
 using namespace std;
 using json = nlohmann::json;
 
 
-class Asana {
+class Asana : public ProjectTool {
 	private:
-		string Token;
-		bool Initialized;
 
 	public:
 		const string API_URL = "https://app.asana.com/api/1.0/";
-		json MyTasks;
-		json Projects;
-		json Tasks;
-		json UserInfo;
-		json UserTaskList;
-		string Breadcrumb;
 		// Constructors
-		Asana();
-		Asana(string tk);
-		// Methods
-		void Initialize(string tk);
-		void PrintToken();
+		Asana():ProjectTool(TOOL_TYPE::ASANA) {}
+		Asana(string tk):ProjectTool(tk, TOOL_TYPE::ASANA) {}
 		// Printers
 		void PrintMyTasksInList();
 		void PrintProjectsInList();

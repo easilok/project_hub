@@ -10,24 +10,6 @@
 
 using namespace std;
 
-Asana::Asana() {
-	Token = "";
-	Initialized = false;
-}
-
-Asana::Asana(string tk) {
-	Initialize(tk);
-}
-
-void Asana::Initialize(string tk) {
-	Token = tk;
-	GetUserInfo();
-	Initialized = false;
-	if (UserInfo != nlohmann::detail::value_t::null) {
-		Initialized = true;
-	}
-}
-
 list<string> Asana::GetHeaders() {
 		list<string> header; 
 		header.push_back("Authorization: Bearer " + Token);

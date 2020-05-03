@@ -14,8 +14,12 @@ using json = nlohmann::json;
 	/* cout << "JSON User Email: " << asana.UserInfo["email"] << endl; */
 
 CursesApp::CursesApp() {
+    /* Asana * asana; */
+    /* Tools.push_back(Asana("1/1158915502756106:421a4f1f7ec674a995a3a8cf379fd92a")); */
+    /* asana = &Tools[Tools.length - 1]; */
 	asana.Initialize("1/1158915502756106:421a4f1f7ec674a995a3a8cf379fd92a");                                          
 	asana.GetMyTasks();
+    /* trello.Initialize("e8f3272462329692eca21f0d208ae202490e5315fcca6e0fef89f4afaa0913ed"); */
 
 	BottomKeys = {"1", "2", "3", "q"};
 	BottomMenus = {"My Tasks", "Projects", "My Info", "Quit"};
@@ -130,6 +134,7 @@ string CursesApp::ProjectsMenu(void) {
 }
 
 void CursesApp::UserTasks() {
+
 	asana.GetMyTasks();
 
 	BodyList.clear();
@@ -142,6 +147,7 @@ void CursesApp::UserTasks() {
 }
 
 void CursesApp::Projects() {
+
 	asana.GetProjects();
 
 	BodyList.clear();
