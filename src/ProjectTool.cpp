@@ -9,17 +9,13 @@ ProjectTool::ProjectTool(TOOL_TYPE tool) {
 }
 
 ProjectTool::ProjectTool(string tk, TOOL_TYPE tool) {
+	Token = tk;
     Tool = tool;
-	Initialize(tk);
 }
 
-void ProjectTool::Initialize(string tk) {
-	Token = tk;
-	GetUserInfo();
-	Initialized = false;
-	if (UserInfo != nlohmann::detail::value_t::null) {
-		Initialized = true;
-	}
+void ProjectTool::Initialize(string tk) 
+{ 
+    Token = tk;
 }
 
 list<string> ProjectTool::GetHeaders() {
@@ -32,25 +28,19 @@ json ProjectTool::GetUserInfo() {
 	return json::parse("{}");
 }
 
-void ProjectTool::PrintMyInfo() {
-    return;
-}
+void ProjectTool::PrintMyInfo() { }
 
-json ProjectTool::GetMyTasks() {
-	return json::parse("{}");
-}
+/* json ProjectTool::GetMyTasks() { */
+/* 	return json::parse("{}"); */
+/* } */
 
-void ProjectTool::PrintMyTasksInList() {
-    return;
-}
+void ProjectTool::PrintMyTasksInList() { }
 
 json ProjectTool::GetProjects() {
 	return json::parse("{}");
 }
 
-void ProjectTool::PrintProjectsInList() {
-    return;
-}
+void ProjectTool::PrintProjectsInList() { }
 
 json ProjectTool::GetProjectTasks(int index) {
 	return json::parse("{}");
@@ -60,7 +50,5 @@ json ProjectTool::GetProjectTasks(string gid) {
 	return json::parse("{}");
 }
 
-void ProjectTool::PrintProjectTasksInList() {
-    return;
-}
+void ProjectTool::PrintProjectTasksInList() { }
 

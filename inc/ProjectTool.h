@@ -29,6 +29,7 @@ class ProjectTool {
 		// Constructors
 		ProjectTool(TOOL_TYPE);
 		ProjectTool(string tk, TOOL_TYPE);
+        virtual ~ProjectTool() {};
 		// Methods
 		virtual void Initialize(string tk);
 		void PrintToken();
@@ -40,7 +41,7 @@ class ProjectTool {
 		// Loaders
 		virtual list<string> GetHeaders();
 		virtual json GetUserInfo();
-		virtual json GetMyTasks();
+		virtual json GetMyTasks() { return json::parse("{}"); }
 		virtual json GetProjects();
 		virtual json GetProjectTasks(int index);
 		virtual json GetProjectTasks(string gid);

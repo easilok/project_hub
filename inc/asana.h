@@ -17,19 +17,21 @@ class Asana : public ProjectTool {
 		const string API_URL = "https://app.asana.com/api/1.0/";
 		// Constructors
 		Asana():ProjectTool(TOOL_TYPE::ASANA) {}
-		Asana(string tk):ProjectTool(tk, TOOL_TYPE::ASANA) {}
+		Asana(string tk);
+        // Methods
+        void Initialize(string);
 		// Printers
 		void PrintMyTasksInList();
 		void PrintProjectsInList();
 		void PrintProjectTasksInList();
 		void PrintMyInfo();
 		// Loaders
-		list<string> GetHeaders();
-		json GetUserInfo();
-		json GetMyTasks();
-		json GetProjects();
-		json GetProjectTasks(int index);
-		json GetProjectTasks(string gid);
+		list<string> GetHeaders() override;
+		json GetUserInfo() override;
+		virtual json GetMyTasks() override;
+		json GetProjects() override;
+		json GetProjectTasks(int index) override;
+		json GetProjectTasks(string gid) override;
 
 };
 

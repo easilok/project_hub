@@ -7,18 +7,14 @@
 using namespace std;
 using json = nlohmann::json;
 
-	/* asana.GetProjects(); */
-
-	/* asana.GetProjectTasks(1); */
-
-	/* cout << "JSON User Email: " << asana.UserInfo["email"] << endl; */
-
 CursesApp::CursesApp() {
-    /* Asana * asana; */
-    /* Tools.push_back(Asana("1/1158915502756106:421a4f1f7ec674a995a3a8cf379fd92a")); */
-    /* asana = &Tools[Tools.length - 1]; */
-	asana.Initialize("1/1158915502756106:421a4f1f7ec674a995a3a8cf379fd92a");                                          
-	asana.GetMyTasks();
+    Asana * as = new Asana("1/1158915502756106:421a4f1f7ec674a995a3a8cf379fd92a");
+    ProjectTool * _asana;
+    Tools.push_back(as);
+    selectedTool = 0;
+    _asana = Tools[selectedTool];
+
+	_asana->GetMyTasks();
     /* trello.Initialize("e8f3272462329692eca21f0d208ae202490e5315fcca6e0fef89f4afaa0913ed"); */
 
 	BottomKeys = {"1", "2", "3", "q"};
@@ -26,7 +22,7 @@ CursesApp::CursesApp() {
 	TopKeys = {"A", "S"};
 	TopMenus = {"Asana", "Trello"};
 	BodyGreeting = {
-		"Tasks Pending: " + to_string(asana.MyTasks.size()),
+		"Tasks Pending: " + to_string(_asana->MyTasks.size()),
 		"Late Tasks: n/a",
 	};
 
@@ -34,11 +30,16 @@ CursesApp::CursesApp() {
 
 	menuBottom = new BarMenu(&BottomKeys, &BottomMenus, BarMenu::Position::BOTTOM);
 	menuTop = new BarMenu(&TopKeys, &TopMenus, BarMenu::Position::TOP);
-	body = new Body(asana.UserInfo["name"].get<string>(), BarMenu::MENU_HEIGHT, BarMenu::MENU_HEIGHT);
+	body = new Body(_asana->UserInfo["name"].get<string>(), BarMenu::MENU_HEIGHT, BarMenu::MENU_HEIGHT);
 
 }
 
 CursesApp::~CursesApp() {
+    int i = 0;
+    for (i = 0; i < (int)Tools.size(); i++) 
+    {
+        delete Tools[i];
+    }
 	delete body;
 	delete menuBottom;
 	delete menuTop;
@@ -65,15 +66,22 @@ string CursesApp::ProjectTasksMenu(int index) {
 	string choice = "0";
 	string retVal = "0";
 	bool keepGoing = true;
+    ProjectTool * tool;
 
-	if (index >= (int)asana.Projects.size()) {
+    if ((selectedTool < 0) || ((int)Tools.size() <= selectedTool)) {
+        return retVal;
+    }
+
+    tool = Tools[selectedTool];
+
+	if (index >= (int)tool->Projects.size()) {
 		cout << "Invalid Project. Please choose again" << endl << endl;
 		return retVal;
 	} else {
-		asana.GetProjectTasks(index);
-		cout << "Showing Tasks for project " << asana.Projects[index]["name"] 
+		tool->GetProjectTasks(index);
+		cout << "Showing Tasks for project " << tool->Projects[index]["name"] 
 				 << ":" << endl << endl;
-		asana.PrintProjectTasksInList();
+		tool->PrintProjectTasksInList();
 	}
 
 	while (keepGoing) {
@@ -87,7 +95,7 @@ string CursesApp::ProjectTasksMenu(int index) {
 		}
 
 		if (keepGoing) {
-			asana.PrintProjectTasksInList();
+			tool->PrintProjectTasksInList();
 		}
 	}
 
@@ -98,10 +106,18 @@ string CursesApp::ProjectsMenu(void) {
 	string choice = "0";
 	string retVal = "0";
 	bool keepGoing = true;
+    ProjectTool * tool;
+
+    if ((selectedTool < 0) || ((int)Tools.size() <= selectedTool)) {
+        return retVal;
+    }
+
+    tool = Tools[selectedTool];
+
 
 	while (keepGoing) {
 
-		asana.PrintProjectsInList();
+		tool->PrintProjectsInList();
 
 		cout << "What can we do?" << endl << endl;
 		cout << "Select Project Index to view tasks" << endl;
@@ -116,7 +132,7 @@ string CursesApp::ProjectsMenu(void) {
 			try {
 				int i = stoi(choice);
 
-				if ((i <= 0) || (i > (int)asana.Projects.size())) {
+				if ((i <= 0) || (i > (int)tool->Projects.size())) {
 					cout << "Invalid Project. Please choose again" << endl << endl;
 				} else {
 					string subChoice = ProjectTasksMenu(i - 1);
@@ -134,42 +150,64 @@ string CursesApp::ProjectsMenu(void) {
 }
 
 void CursesApp::UserTasks() {
+    ProjectTool * tool;
 
-	asana.GetMyTasks();
+    if ((selectedTool < 0) || ((int)Tools.size() <= selectedTool)) {
+        return;
+    }
+
+    tool = Tools[selectedTool];
+
+	tool->GetMyTasks();
 
 	BodyList.clear();
 
-	for (int i = 0; i < (int)asana.MyTasks.size(); i++) {
-		string tmp = to_string(i + 1) + ": " + asana.MyTasks[i]["name"].get<string>();
+	for (int i = 0; i < (int)tool->MyTasks.size(); i++) {
+		string tmp = to_string(i + 1) + ": " + tool->MyTasks[i]["name"].get<string>();
 		BodyList.push_back(tmp);
 	}
 
 }
 
 void CursesApp::Projects() {
+    ProjectTool * tool;
 
-	asana.GetProjects();
+    if ((selectedTool < 0) || ((int)Tools.size() <= selectedTool)) {
+        return;
+    }
+
+    tool = Tools[selectedTool];
+
+	tool->GetProjects();
 
 	BodyList.clear();
 
-	for (int i = 0; i < (int)asana.Projects.size(); i++) {
-		string tmp = to_string(i + 1) + ": " + asana.Projects[i]["name"].get<string>();
+	for (int i = 0; i < (int)tool->Projects.size(); i++) {
+		string tmp = to_string(i + 1) + ": " + tool->Projects[i]["name"].get<string>();
 		BodyList.push_back(tmp);
 	}
 
 }
 
 void CursesApp::ProjectTasks(int index) {
-	if ((index < 0) || (index >= (int)asana.Projects.size())) {
+    ProjectTool * tool;
+
+    if ((selectedTool < 0) || ((int)Tools.size() <= selectedTool)) {
+        return;
+    }
+
+    tool = Tools[selectedTool];
+
+	if ((index < 0) || (index >= (int)tool->Projects.size())) {
 		return;
 	}
 
-	asana.GetProjectTasks(index);
+	tool->GetProjectTasks(index);
 
 	BodyList.clear();
 
-	for (int i = 0; i < (int)asana.Tasks.size(); i++) {
-		string tmp = to_string(i + 1) + ": " + asana.Tasks[i]["name"].get<string>();
+	for (int i = 0; i < (int)tool->Tasks.size(); i++) {
+		string tmp = to_string(i + 1) + ": " + tool->Tasks[i]["name"].get<string>();
 		BodyList.push_back(tmp);
 	}
 

@@ -23,7 +23,8 @@ class CursesApp {
 			PROJECT_TASKS,
 		};
 	private:
-		list<ProjectTool>Tools;
+		vector<ProjectTool*>Tools;
+        int selectedTool = -1;
         Asana asana;
 
 		Body * body;

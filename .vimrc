@@ -8,7 +8,8 @@
 
 packadd termdebug
 let g:termdebug_popup = 1
-let g:termdebug_wide = 163
+" let g:termdebug_wide = 163
+let g:termdebug_wide=1
 
 let &path.="inc,lib,../inc,"
 

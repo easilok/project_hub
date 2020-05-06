@@ -10,6 +10,19 @@
 
 using namespace std;
 
+Asana::Asana(string tk):ProjectTool(tk, TOOL_TYPE::ASANA) {
+    Initialize(tk);
+}
+
+void Asana::Initialize(string tk) {
+    Token = tk;
+    Initialized = true;
+	GetUserInfo();
+	if (UserInfo == nlohmann::detail::value_t::null) {
+		Initialized = false;
+	}
+}
+
 list<string> Asana::GetHeaders() {
 		list<string> header; 
 		header.push_back("Authorization: Bearer " + Token);
@@ -22,6 +35,10 @@ list<string> Asana::GetHeaders() {
 json Asana::GetUserInfo() {
 
 	UserInfo = json::parse("{}");
+
+    if (!Initialized) {
+        return UserInfo;
+    }
 
 	try {
 		string url = API_URL + "users/me";
@@ -201,6 +218,10 @@ void Asana::PrintProjectsInList() {
 json Asana::GetProjectTasks(int index) {
 	Tasks = json::parse("{}");
 
+	if (!Initialized) {
+		return Tasks;
+	}
+
 	if ((index < 0) || (index >= (int)Projects.size())){
 		return Tasks;
 	}
@@ -211,6 +232,10 @@ json Asana::GetProjectTasks(int index) {
 json Asana::GetProjectTasks(string gid) {
 
 	Tasks = json::parse("{}");
+
+	if (!Initialized) {
+		return Tasks;
+	}
 
 	try {
 		string url = API_URL + "projects"\
